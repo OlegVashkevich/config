@@ -42,7 +42,7 @@ jobs:
       - name: Install composer dependencies
         uses: ramsey/composer-install@v3
         with:
-          dependency-versions: "highest"
+          dependency-versions: "lowest"
 
       - name: "Tests"
         run: "./vendor/phpunit/phpunit/phpunit --no-configuration ./tests"
