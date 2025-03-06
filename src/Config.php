@@ -84,5 +84,4 @@ class Config extends ArrayObject
             $item = $this->getSecretPrefix().$secret_key;
         }
     }
-    //check phpstan workflow
 }
