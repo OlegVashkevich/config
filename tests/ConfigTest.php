@@ -57,6 +57,13 @@ class ConfigTest extends TestCase
         //check secret
         $this->assertSame($secret['very_secret'], $secret_lvl1);
 
+        $secret_lvl2 = '';
+        if (is_array($config['not_secret'])) {
+            $secret_lvl2 = $config->getSecret($config['not_secret']['secret']);
+        }
+        //check secret
+        $this->assertSame($secret['very_secret'], $secret_lvl2);
+
         //delete file
         unlink($secret_path);
     }
