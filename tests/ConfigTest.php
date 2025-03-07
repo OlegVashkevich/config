@@ -22,6 +22,9 @@ class ConfigTest extends TestCase
         file_put_contents($secret_path, $php_secret_file_content);
 
         //get array
+        /**
+         * @var array<string, string> $secret
+         */
         $secret = require $secret_path;
 
         $defaultConfig = [

@@ -39,6 +39,9 @@ class Config extends ArrayObject
      */
     private function prepareData(array &$data): void
     {
+        /**
+         * @var array<string, string> $secret
+         */
         $secret = require $this->secret_path;
         array_walk_recursive($data, [$this, 'hideSecret'], $secret);
     }
@@ -51,11 +54,14 @@ class Config extends ArrayObject
      */
     public function getSecret(string $key): string|null
     {
+        /**
+         * @var array<string, string> $secret
+         */
         $secret = require $this->secret_path;
         $arKey = explode($this->getSecretPrefix(), $key);
 
         $value = null;
-        if (!empty($arKey[1]) && !empty($secret[$arKey[1]])) {
+        if (isset($arKey[1]) && isset($secret[$arKey[1]])) {
             $value = $secret[$arKey[1]];
         }
         return $value;
@@ -80,8 +86,11 @@ class Config extends ArrayObject
      */
     private function hideSecret(mixed &$item, string $_, array $secret): void
     {
-        if (is_string($item) && $secret_key = array_search($item, $secret)) {
-            $item = $this->getSecretPrefix().$secret_key;
+        if (is_string($item)) {
+            $secret_key = array_search($item, $secret, true);
+            if (is_string($secret_key)) {
+                $item = $this->getSecretPrefix().$secret_key;
+            }
         }
     }
 }
