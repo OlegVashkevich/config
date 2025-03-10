@@ -37,6 +37,6 @@ composer requier olegv/config
     ```
 3. If you need get secret data:
     ```php
-    $secret_lvl1 = $config->getSecret($config['secret']);
-    $secret_lvl2 = $config->getSecret($config['not_secret']['secret']);
+    $secret_lvl1 = $config['secret']->getValue();
+    $secret_lvl2 = $config['not_secret']['secret']->getValue();
     ```
