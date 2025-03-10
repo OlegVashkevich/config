@@ -1,6 +1,6 @@
 {
     "name": "olegv/config",
-    "description": "Class for configuration and hiding secret data",
+    "description": "Library for configuration and hiding secret data",
     "license": "MIT",
     "authors": [
         {

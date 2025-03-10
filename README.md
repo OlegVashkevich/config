@@ -1,5 +1,5 @@
 # Config
-Class for configuration and hiding secret data
+Library for configuration and hiding secret data
 
 ## Features
 - lightweight
