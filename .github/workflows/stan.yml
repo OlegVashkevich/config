@@ -45,4 +45,4 @@ jobs:
           dependency-versions: "lowest"
 
       - name: "Run PHPStan"
-        run: "./vendor/bin/phpstan --error-format=github"
+        run: "./vendor/bin/phpstan --error-format=github analyse -c phpstan.neon"
