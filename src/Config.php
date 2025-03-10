@@ -4,13 +4,14 @@ namespace OlegV;
 
 use ArrayObject;
 use SensitiveParameter;
+use SensitiveParameterValue;
 
 /**
  * Allows you to hide secret data
  *
- * @template TKey of (int|string)
+ * @template TKey as array-key
  * @template TValue
- * @extends  ArrayObject<TKey , TValue>
+ * @extends  ArrayObject<TKey , SensitiveParameterValue|numeric|string|array<SensitiveParameterValue|numeric|string>|TValue>
  */
 class Config extends ArrayObject
 {
@@ -21,7 +22,7 @@ class Config extends ArrayObject
 
     /**
      * @param  string  $secret_path  Path to secret file which returns array<string, string>
-     * @param  array<TKey , TValue>  $data  Configuration data is a multidimensional associative array
+     * @param  array<TKey, TValue>  $data  Configuration data is a multidimensional associative array
      */
     public function __construct(
         #[SensitiveParameter] string $secret_path,
@@ -35,7 +36,8 @@ class Config extends ArrayObject
     /**
      * Preparing configuration data by replacing secret values with a keyed prefix
      *
-     * @param  array<TKey , TValue> &$data  Reference to configuration data array
+     * @param  array<TKey , TValue>  $data  Reference to configuration data array
+     * @param-out  array<TKey , TValue>  $data  Reference to configuration data array
      */
     private function prepareData(array &$data): void
     {
@@ -47,40 +49,9 @@ class Config extends ArrayObject
     }
 
     /**
-     * Getting a secret value by key.
-     *
-     * @param  string  $key  Key to get secret value
-     * @return string|null The value of the secret or null if the value is not found
-     */
-    public function getSecret(string $key): string|null
-    {
-        /**
-         * @var array<string, string> $secret
-         */
-        $secret = require $this->secret_path;
-        $arKey = explode($this->getSecretPrefix(), $key);
-
-        $value = null;
-        if (isset($arKey[1]) && isset($secret[$arKey[1]])) {
-            $value = $secret[$arKey[1]];
-        }
-        return $value;
-    }
-
-    /**
-     * Getting prefix for secret values.
-     *
-     * @return non-empty-string Prefix for secret values
-     */
-    public function getSecretPrefix(): string
-    {
-        return 'secret#';
-    }
-
-    /**
      * Replacing secret values with a prefix containing a key.
      *
-     * @param  mixed &$item  Reference to an element of a data array
+     * @param  mixed  &$item  Reference to an element of a data array
      * @param  string  $_  Key of the current array element (not used)
      * @param  array<string, string>  $secret  Array of secret values
      */
@@ -89,7 +60,12 @@ class Config extends ArrayObject
         if (is_string($item)) {
             $secret_key = array_search($item, $secret, true);
             if (is_string($secret_key)) {
-                $item = $this->getSecretPrefix().$secret_key;
+                //$item = $this->getSecretPrefix().$secret_key;
+                /**
+                 * @var SensitiveParameterValue $item
+                 * @param-out  SensitiveParameterValue  $item
+                 */
+                $item = new SensitiveParameterValue($item);
             }
         }
     }

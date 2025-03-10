@@ -4,6 +4,7 @@ namespace Tests;
 
 use OlegV\Config;
 use PHPUnit\Framework\TestCase;
+use SensitiveParameterValue;
 
 class ConfigTest extends TestCase
 {
@@ -37,31 +38,30 @@ class ConfigTest extends TestCase
             ],
         ];
         $config = new Config($secret_path, $defaultConfig);
-
         $defaultHidingConfig = [
-            'secret' => 'secret#very_secret',
+            'secret' => new SensitiveParameterValue($secret['very_secret']),
             'not_secret' => [
                 0 => 'data1',
                 1 => 'data2',
                 2 => 'data3',
-                'secret' => 'secret#very_secret',
+                'secret' => new SensitiveParameterValue($secret['very_secret']),
             ],
         ];
         //check that all data hided
-        $this->assertSame($defaultHidingConfig, (array)$config);
+        $this->assertEquals($defaultHidingConfig, (array)$config);
 
         $secret_lvl1 = '';
-        if (is_string($config['secret'])) {
-            $secret_lvl1 = $config->getSecret($config['secret']);
+        if (is_object($config['secret'])) {
+            $secret_lvl1 = $config['secret']->getValue();
         }
         //check secret
         $this->assertSame($secret['very_secret'], $secret_lvl1);
 
         $secret_lvl2 = '';
-        if (is_array($config['not_secret'])) {
-            $secret_lvl2 = $config->getSecret($config['not_secret']['secret']);
+        if (is_array($config['not_secret']) && is_object($config['not_secret']['secret'])) {
+            $secret_lvl2 = $config['not_secret']['secret']->getValue();
         }
-        //check secret
+        //check secret lvl2
         $this->assertSame($secret['very_secret'], $secret_lvl2);
 
         //delete file
