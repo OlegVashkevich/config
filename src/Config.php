@@ -11,7 +11,8 @@ use SensitiveParameterValue;
  *
  * @template TKey as array-key
  * @template TValue
- * @extends  ArrayObject<TKey , SensitiveParameterValue|numeric|string|array<SensitiveParameterValue|numeric|string>|TValue>
+ * @template TVal of (SensitiveParameterValue|numeric|string)
+ * @extends  ArrayObject<TKey , TVal|array<TVal|array<TVal|array<TVal>>>|TValue>
  */
 class Config extends ArrayObject
 {
@@ -60,7 +61,6 @@ class Config extends ArrayObject
         if (is_string($item)) {
             $secret_key = array_search($item, $secret, true);
             if (is_string($secret_key)) {
-                //$item = $this->getSecretPrefix().$secret_key;
                 /**
                  * @var SensitiveParameterValue $item
                  * @param-out  SensitiveParameterValue  $item

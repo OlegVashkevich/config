@@ -35,6 +35,18 @@ class ConfigTest extends TestCase
                 'data2',
                 'data3',
                 'secret' => $secret['very_secret'],
+                'not_secret' => [
+                    'data1',
+                    'data2',
+                    'data3',
+                    'secret' => $secret['very_secret'],
+                    'not_secret' => [
+                        'data1',
+                        'data2',
+                        'data3',
+                        'secret' => $secret['very_secret'],
+                    ],
+                ],
             ],
         ];
         $config = new Config($secret_path, $defaultConfig);
@@ -45,6 +57,18 @@ class ConfigTest extends TestCase
                 1 => 'data2',
                 2 => 'data3',
                 'secret' => new SensitiveParameterValue($secret['very_secret']),
+                'not_secret' => [
+                    0 => 'data1',
+                    1 => 'data2',
+                    2 => 'data3',
+                    'secret' => new SensitiveParameterValue($secret['very_secret']),
+                    'not_secret' => [
+                        0 => 'data1',
+                        1 => 'data2',
+                        2 => 'data3',
+                        'secret' => new SensitiveParameterValue($secret['very_secret']),
+                    ],
+                ],
             ],
         ];
         //check that all data hided
@@ -63,6 +87,24 @@ class ConfigTest extends TestCase
         }
         //check secret lvl2
         $this->assertSame($secret['very_secret'], $secret_lvl2);
+
+        $secret_lvl3 = '';
+        if (is_array($config['not_secret']) && is_array($config['not_secret']['not_secret']) && is_object(
+                $config['not_secret']['not_secret']['secret'],
+            )) {
+            $secret_lvl3 = $config['not_secret']['not_secret']['secret']->getValue();
+        }
+        //check secret lvl3
+        $this->assertSame($secret['very_secret'], $secret_lvl3);
+
+        $secret_lvl4 = '';
+        if (is_array($config['not_secret']) && is_array($config['not_secret']['not_secret']) && is_array(
+                $config['not_secret']['not_secret']['not_secret'],
+            ) && is_object($config['not_secret']['not_secret']['not_secret']['secret'])) {
+            $secret_lvl4 = $config['not_secret']['not_secret']['not_secret']['secret']->getValue();
+        }
+        //check secret lvl4
+        $this->assertSame($secret['very_secret'], $secret_lvl4);
 
         //delete file
         unlink($secret_path);
