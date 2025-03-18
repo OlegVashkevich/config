@@ -10,7 +10,7 @@ Library for configuration and hiding secret data
 
 ## Install
 ```shell
-composer requier olegv/config
+composer require olegv/config
 ```
 ## Usage
 1. Create secret file somewhere(`$path_to_secret_file`), it must return array<string, string>, for example:
